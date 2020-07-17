@@ -1,0 +1,23 @@
+<!-- The index.html extends the base.html -->
+{% extends 'base.html' %}
+
+{% block title %}Annotation{% endblock title %}
+
+<!-- The code below is inserted inside the "content" area of base.html -->
+{% block content %}
+<h1>Welcome to the Radiobotics Annotation Tool (RANT)</h1>
+<div id="sia">
+    <button id="selection">Selection</button>
+    <button id="rectangle">Rectangle</button>
+    <div id="sia-container">
+        <div id="sia-wrapper">
+            <img id="sia-img-1" src="{{ sias.0.img.url }}" data-height="{{sias.0.img_height}}" data-width="{{sias.0.img_width}}" alt="A Green House">
+            <canvas id="sia-canvas"></canvas>
+        </div>
+    </div>
+    <button id="save" dataset-siaId="1">Save</button>
+</div>
+
+    
+<p>{{labels.0.name}}</p>
+{% endblock content%}

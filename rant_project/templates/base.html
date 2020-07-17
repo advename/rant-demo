@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %} 
+    <link rel="stylesheet" href="{% static "global/css/main.css" %}" />
+    <title>RANT - {% block title %}<!-- text inserted from another template -->{% endblock %}</title>
+  </head>
+  <body>
+      
+      {% block content %}
+      <!-- HTML content inserted from another template -->
+      <!-- This block name is "content" -->
+      {% endblock %}
+    <script src="{% static "global/js/fabric.min.js" %}"></script>
+    <script src="{% static "global/js/main.js" %}"></script>
+  </body>
+    <footer>
+      <p>Copyright 2020</p>
+  </footer>
+</html>
