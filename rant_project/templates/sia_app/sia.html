@@ -10,9 +10,9 @@
     <button id="selection">Selection</button>
     <button id="rectangle">Rectangle</button>
     <div id="sia-container">
-        <div id="sia-wrapper">
-            <img id="sia-img-1" src="{{ sias.0.img.url }}" data-height="{{sias.0.img_height}}" data-width="{{sias.0.img_width}}" alt="A Green House">
-            <canvas id="sia-canvas"></canvas>
+        <div id="sia-wrapper" >
+            {% comment %} <img id="sia-img-1" src="{{ sias.0.img.url }}"  alt="A Green House"> {% endcomment %}
+            <canvas id="sia-canvas" tabindex="-1" data-imgsrc="{{ sias.0.img.url }}" data-imgwidth="{{sias.0.img_width}}" data-imgheight="{{sias.0.img_height}}" ></canvas>
         </div>
     </div>
     <button id="save" dataset-siaId="1">Save</button>

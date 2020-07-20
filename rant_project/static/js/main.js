@@ -4,6 +4,12 @@
  * ========================
  */
 let vw, vh;
+const currentURL =
+  location.protocol +
+  "//" +
+  location.hostname +
+  (location.port ? ":" + location.port : "");
+const apiURL = `${currentURL}/api/v1/`;
 
 /**
  * Initialize on page load and page resize
@@ -42,13 +48,14 @@ const siaWrapper = document.querySelector("#sia-wrapper");
 const siaCanvas = document.querySelector("#sia-canvas");
 
 let canvas = new fabric.Canvas(siaCanvas, {});
+
 /**
  * Image aspect ratio
  */
 function aspectRatioSIA() {
-  let img = document.querySelector("#sia-img-1");
-  const imgW = img.dataset.width;
-  const imgH = img.dataset.height;
+  console.log(siaCanvas.dataset);
+  const imgW = siaCanvas.dataset.imgwidth;
+  const imgH = siaCanvas.dataset.imgheight;
   arSIA = imgW / imgH; //aspect ratio is width / height
   calcSIASize();
 }
@@ -79,6 +86,29 @@ function resizeSIA() {
   //Canvas
   canvas.setDimensions({ width: wSIA, height: hSIA });
 }
+
+// canvas.setBackgroundImage(
+//   ,
+//   canvas.renderAll.bind(canvas),
+//   {
+//     // Needed to position backgroundImage at 0/0
+//     originX: "left",
+//     originY: "top",
+//     img.scaleToWidth(canvas.width);
+//     img.scaleToHeight(canvas.height);
+//     width: wSIA,
+//     height: hSIA
+//   }
+// );
+
+canvas.setBackgroundImage(currentURL + siaCanvas.dataset.imgsrc, function() {
+  let img = canvas.backgroundImage;
+  img.originX = "left";
+  img.originY = "top";
+  img.scaleX = canvas.getWidth() / img.width;
+  img.scaleY = canvas.getHeight() / img.height;
+  canvas.renderAll();
+});
 
 /**
  * ========================
@@ -170,14 +200,6 @@ function toggleDrawing() {
   }
 }
 
-// Save annotations to DB
-const currentURL =
-  location.protocol +
-  "//" +
-  location.hostname +
-  (location.port ? ":" + location.port : "");
-const apiURL = `${currentURL}/api/v1/`;
-
 document.querySelector("#save").addEventListener("click", () => {
   let objects = canvas.getObjects();
   console.log(objects);
@@ -215,3 +237,61 @@ function getCookieValue(a) {
   var b = document.cookie.match("(^|[^;]+)\\s*" + a + "\\s*=\\s*([^;]+)");
   return b ? b.pop() : "";
 }
+
+let draggingAllowed = false;
+canvas.on("mouse:wheel", function(opt) {
+  const zoomVal = 0.9;
+  var delta = opt.e.deltaY;
+  var zoom = canvas.getZoom();
+  zoom *= zoomVal ** delta;
+  if (zoom > 20) zoom = 20;
+  if (zoom < 0.01) zoom = 0.01;
+  canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+  opt.e.preventDefault();
+  opt.e.stopPropagation();
+});
+
+canvas.on("mouse:down", function(opt) {
+  var evt = opt.e;
+  console.log(evt.altKey);
+  //make normal space event key listener and create a flag
+  if (draggingAllowed) {
+    this.isDragging = true;
+    this.selection = false;
+    this.lastPosX = evt.clientX;
+    this.lastPosY = evt.clientY;
+  }
+});
+
+canvas.on("mouse:move", function(opt) {
+  if (this.isDragging) {
+    var e = opt.e;
+    var vpt = this.viewportTransform;
+    vpt[4] += e.clientX - this.lastPosX;
+    vpt[5] += e.clientY - this.lastPosY;
+    this.requestRenderAll();
+    this.lastPosX = e.clientX;
+    this.lastPosY = e.clientY;
+  }
+});
+
+canvas.on("mouse:up", function(opt) {
+  this.isDragging = false;
+  this.selection = true;
+});
+
+document.addEventListener("keydown", function(event) {
+  console.log("key pressed");
+  console.log(event.key);
+  if (event.key == " ") {
+    draggingAllowed = true;
+  }
+});
+
+document.addEventListener("keyup", function(event) {
+  console.log("key up");
+  console.log(event.key);
+  if (event.key == " ") {
+    draggingAllowed = false;
+  }
+});
